@@ -9,7 +9,7 @@ jobs:
 
     env:
       DOCKER_BUILDKIT: 1
-      REPOSITORY: vigenere23/renv-${{ matrix.stage }}:${{ matrix.r_version }}
+      REPOSITORY: vigenere23/renv-${{ matrix.stage }}
 
     strategy:
       matrix:
@@ -48,10 +48,12 @@ jobs:
           target: ${{ matrix.stage }}
           build-args: |
             R_VERSION=${{ matrix.r_version }}
-          tags: ${{ env.REPOSITORY }}
+          tags: ${{ env.REPOSITORY }}:${{ matrix.r_version }}
           push: true
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
+
+      - uses: actions/checkout@v2
 
       - name: Docker Hub Description
         uses: peter-evans/dockerhub-description@v2
@@ -59,6 +61,7 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
           repository: ${{ env.REPOSITORY }}
+          short-description: A pre-built Docker image setup with `renv` dependencies.
 
       - name: Move cache
         run: |
