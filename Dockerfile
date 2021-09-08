@@ -7,6 +7,9 @@ WORKDIR /renv
 
 RUN Rscript -e 'install.packages("renv")'
 
+COPY scripts/entrypoint.sh /usr/local/bin/renv-entrypoint.sh
+ENTRYPOINT ["renv-entrypoint.sh"]
+
 CMD ["R"]
 
 # -----------------------
@@ -25,6 +28,3 @@ CMD ["radian"]
 # -----------------------
 
 FROM ${STAGE} as final
-
-COPY scripts/entrypoint.sh /usr/local/bin/renv-entrypoint.sh
-ENTRYPOINT ["renv-entrypoint.sh"]
