@@ -4,17 +4,11 @@ on:
       - master
 
 jobs:
-  deploy:
+  deploy-minimal:
     runs-on: ubuntu-latest
 
     env:
       DOCKER_BUILDKIT: 1
-
-    strategy:
-      matrix:
-        stage:
-          - minimal
-          - dev
 
     steps:
       - uses: actions/checkout@v2
@@ -28,23 +22,62 @@ jobs:
       - name: Cache Docker layers
         uses: actions/cache@v2
         with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          path: /tmp/.buildx-cache-minimal
+          key: ${{ runner.os }}-buildx-minimal-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-buildx
+            ${{ runner.os }}-buildx-minimal
 
       - name: Build & Push
         uses: docker/build-push-action@v2
         with:
+          file: Dockerfile_renv_minimal
+          push: false
           # username: ${{ secrets.DOCKER_USERNAME }}
           # password: ${{ secrets.DOCKER_PASSWORD }}
-          # repository: vigenere23/renv-${{ matrix.stage }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
-          push: false
-          target: ${{ matrix.stage }}
+          # repository: vigenere23/renv-minimal
+          cache-from: type=local,src=/tmp/.buildx-cache-minimal
+          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-minimal-new
 
       - name: Move cache
         run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+          rm -rf /tmp/.buildx-cache-minimal
+          mv /tmp/.buildx-cache-minimal-new /tmp/.buildx-cache-minimal
+
+  deploy-dev:
+    runs-on: ubuntu-latest
+
+    env:
+      DOCKER_BUILDKIT: 1
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@master
+        with:
+          install: true
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache-dev
+          key: ${{ runner.os }}-buildx-dev-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-dev
+
+      - name: Build & Push
+        uses: docker/build-push-action@v2
+        with:
+          file: Dockerfile_renv_minimal
+          push: false
+          # username: ${{ secrets.DOCKER_USERNAME }}
+          # password: ${{ secrets.DOCKER_PASSWORD }}
+          # repository: vigenere23/renv-dev
+          cache-from: type=local,src=/tmp/.buildx-cache-dev
+          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-dev-new
+
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache-dev
+          mv /tmp/.buildx-cache-dev-new /tmp/.buildx-cache-dev
