@@ -45,9 +45,10 @@ jobs:
       - name: Build & Push
         uses: docker/build-push-action@v2
         with:
-          target: ${{ matrix.stage }}
+          target: final
           build-args: |
             R_VERSION=${{ matrix.r_version }}
+            STAGE=${{ matrix.stage }}
           tags: ${{ env.REPOSITORY }}:${{ matrix.r_version }}
           push: true
           cache-from: type=local,src=/tmp/.buildx-cache

@@ -1,13 +1,11 @@
 ARG R_VERSION=3.6.3
+ARG STAGE=dev
 
 FROM rocker/r-ver:${R_VERSION} as minimal
 
 WORKDIR /renv
 
 RUN Rscript -e 'install.packages("renv")'
-
-COPY scripts/entrypoint.sh /usr/local/bin/renv-entrypoint.sh
-ENTRYPOINT ["renv-entrypoint.sh"]
 
 CMD ["R"]
 
@@ -23,3 +21,10 @@ RUN pip3 install radian
 RUN Rscript -e 'install.packages("languageserver", Ncpus = 16)'
 
 CMD ["radian"]
+
+# -----------------------
+
+FROM ${STAGE} as final
+
+COPY scripts/entrypoint.sh /usr/local/bin/renv-entrypoint.sh
+ENTRYPOINT ["renv-entrypoint.sh"]
