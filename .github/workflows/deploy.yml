@@ -28,7 +28,7 @@ jobs:
       - name: Cache Docker layers
         uses: actions/cache@v2
         with:
-          path: /tmp/.buildx-cache-${{ matrix.r_version }}-${{ matrix.stage }}
+          path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ matrix.r_version }}-${{ matrix.stage }}-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-${{ matrix.r_version }}-${{ matrix.stage }}
@@ -49,10 +49,10 @@ jobs:
             R_VERSION=${{ matrix.r_version }}
           tags: vigenere23/renv-${{ matrix.stage }}:${{ matrix.r_version }}
           push: false
-          cache-from: type=local,src=/tmp/.buildx-cache-${{ matrix.stage }}
-          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-${{ matrix.stage }}-new
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
 
       - name: Move cache
         run: |
-          rm -rf /tmp/.buildx-cache-${{ matrix.r_version }}-${{ matrix.stage }}
-          mv /tmp/.buildx-cache-${{ matrix.r_version }}-${{ matrix.stage }}-new /tmp/.buildx-cache-${{ matrix.r_version }}-${{ matrix.stage }}
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
