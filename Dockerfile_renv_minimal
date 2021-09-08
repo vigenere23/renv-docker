@@ -1,9 +1,0 @@
-ARG R_VERSION=3.6.3
-
-FROM rocker/r-ver:${R_VERSION}
-
-WORKDIR /renv
-
-RUN Rscript -e 'install.packages("renv")'
-
-CMD ["R"]
