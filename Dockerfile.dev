@@ -7,14 +7,16 @@ ENV RENV_PATHS_ROOT=/renv
 WORKDIR /renv
 
 RUN apt-get update && \
-    apt-get install -y \
+    apt-get install -y --no-install-recommends \
         libcurl4-openssl-dev \
         libssl-dev \
         libxml2-dev \
-        procps \
-        python3-pip
+        libsm6 \
+        libxt6 \
+        procps
 
-RUN pip3 install radian
+RUN apt-get install -y python3-pip && \
+    pip3 install radian
 
 RUN Rscript -e '\
     install.packages("renv");\
