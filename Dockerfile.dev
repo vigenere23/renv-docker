@@ -6,14 +6,20 @@ ENV RENV_PATHS_ROOT=/renv
 
 WORKDIR /renv
 
-RUN Rscript -e 'install.packages("renv")'
+RUN apt-get update && \
+    apt-get install -y \
+        libcurl4-openssl-dev \
+        libssl-dev \
+        libxml2-dev \
+        procps \
+        python3-pip
 
-RUN apt-get update
-RUN apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev procps
-RUN Rscript -e 'install.packages("languageserver", Ncpus = 16)'
-
-RUN apt-get install -y python3-pip
 RUN pip3 install radian
+
+RUN Rscript -e '\
+    install.packages("renv");\
+    install.packages("languageserver", Ncpus = 16)\
+    '
 
 COPY scripts/entrypoint.sh /usr/local/bin/renv-entrypoint.sh
 ENTRYPOINT ["renv-entrypoint.sh"]
