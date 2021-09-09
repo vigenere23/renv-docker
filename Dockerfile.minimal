@@ -2,6 +2,9 @@ ARG R_VERSION=3.6.3
 
 FROM rocker/r-ver:${R_VERSION}
 
+ENV RENV_PATHS_CACHE=/renv/cache
+ENV RENV_PATHS_ROOT=/renv
+
 WORKDIR /renv
 
 RUN Rscript -e 'install.packages("renv")'
